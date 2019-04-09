@@ -40,6 +40,40 @@ foreach($changes as $k => $diff) {
     print tableize($table_titles[$k], $diff, $table_opts);
 }
 
+$diffVersions = array();
+$commitMessages = array();
+foreach($changes as $k => $diff) {    
+    foreach ($diff as $repo => $values) {
+        $diffVersions[$repo] = [$values[0], $values[1]];
+        if (!empty($values[2])){
+            $compareUrl = $values[2];
+            if (strpos($compareUrl, 'github.com') !== false){
+                $apiCompareUrl = str_replace('https://github.com', 'https://api.github.com/repos', $compareUrl);                                
+                $context = stream_context_create(['http' => ['method' => 'GET','header' => ['User-Agent: PHP']]]);
+                $compareResponse = @file_get_contents($apiCompareUrl, false, $context);
+                if ($compareResponse){
+                    $compareData = json_decode($compareResponse, true);
+                    if(isset($compareData['commits'])){
+                        foreach ($compareData['commits'] as $commit) {
+                            $commitMessages[$repo][] = $commit['commit']['message'];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+foreach ($commitMessages as $repo => $messages) {    
+    $diffVersion = $diffVersions[$repo];
+    print "## $repo changes between " . $diffVersion[0] . " and " . $diffVersion[1] . " \n";
+    foreach ($messages as $message) {
+        $messageWithoutLineBreaks = str_replace("\n", "", $message);
+        print " - $messageWithoutLineBreaks \n";
+    }
+    print "\n\n";
+}
+
 function diff($key, $from, $to, $base_path) {
 
     $pkgs = array();
