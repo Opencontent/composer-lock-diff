@@ -23,7 +23,7 @@ if ($opts['changelog']) {
     }
     $changeLog['diffVersions'] = array();
     $changeLog['commitMessages'] = array();
-    foreach($changes as $k => $diff) {    
+    foreach($changes as $k => $diff) {
         foreach ($diff as $repo => $values) {
             $changeLog['diffVersions'][$repo] = $values;
             if (!empty($values[2])){
@@ -72,7 +72,7 @@ $table_titles = [
 ];
 
 if ($opts['text']) {
-    foreach($changes as $k => $diff) {    
+    foreach($changes as $k => $diff) {
         foreach ($diff as $repo => $values) {
             if (!empty($values[0])){
                 print "Updating $repo (" . $values[0] . " => " . $values[1] . ") \n";
@@ -93,18 +93,18 @@ if ($opts['text']) {
 }
 
 if ($opts['changelog']) {
-    foreach ($changeLog['commitMessages'] as $repo => $messages) {    
+    foreach ($changeLog['commitMessages'] as $repo => $messages) {
         $diffVersion = $changeLog['diffVersions'][$repo];
-        if($opts['md']){                        
+        if($opts['md']){
             if ($opts['no-links']) {
                 print "### $repo changes between " . $diffVersion[0] . " and " . $diffVersion[1] . "\n";
             }else{
                 print "### " . urlFormatterMd($diffVersion[2], "$repo changes between " . $diffVersion[0] . " and " . $diffVersion[1]) . "\n";
             }
-            
+
         }else{
             $links = " (" . $diffVersion[2] . ")";
-            if (!$opts['no-links']) {                
+            if (!$opts['no-links']) {
                 $links = '';
             }
             print "$repo changes between " . $diffVersion[0] . " and " . $diffVersion[1] . $links . "\n";
@@ -386,4 +386,3 @@ EOF;
 
     exit(0);
 }
-
